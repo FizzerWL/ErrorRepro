@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.MSBuild;
+﻿using Microsoft.Build.Locator;
+using Microsoft.CodeAnalysis.MSBuild;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,30 @@ namespace Builder
     {
         static void Main(string[] args)
         {
+            // Locates all of the instances of Visual Studio 2017 on the machine with MSBuild.
+            var instances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
+            if (!instances.Any())
+            {
+                Console.WriteLine("No Visual Studio instances found.");
+            }
+
+            Console.WriteLine("Visual Studio intances:");
+
+            foreach (var instance in instances)
+            {
+                Console.WriteLine($"  - {instance.Name} - {instance.Version}");
+                Console.WriteLine($"    {instance.MSBuildPath}");
+                Console.WriteLine();
+            }
+
+            // We register the first instance that we found. This will cause MSBuildWorkspace to use the MSBuild installed in that instance.
+            // Note: This has to be registered *before* creating MSBuildWorkspace. Otherwise, the MEF composition used by MSBuildWorkspace will fail to compose.
+            var registeredInstance = instances.First();
+            MSBuildLocator.RegisterInstance(registeredInstance);
+
+            Console.WriteLine($"Registered: {registeredInstance.Name} - {registeredInstance.Version}");
+            Console.WriteLine();
+
             var workspace = MSBuildWorkspace.Create();
             var solution = workspace.OpenSolutionAsync(@"..\..\..\..\ClassLibrary1\ClassLibrary1.sln").Result;
 
