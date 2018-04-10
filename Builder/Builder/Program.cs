@@ -13,6 +13,7 @@ namespace Builder
     {
         static void Main(string[] args)
         {
+            // Locates all of the instances of Visual Studio 2017 on the machine with MSBuild.
             var instances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
             if (!instances.Any())
             {
@@ -28,6 +29,8 @@ namespace Builder
                 Console.WriteLine();
             }
 
+            // We register the first instance that we found. This will cause MSBuildWorkspace to use the MSBuild installed in that instance.
+            // Note: This has to be registered *before* creating MSBuildWorkspace. Otherwise, the MEF composition used by MSBuildWorkspace will fail to compose.
             var registeredInstance = instances.First();
             MSBuildLocator.RegisterInstance(registeredInstance);
 
