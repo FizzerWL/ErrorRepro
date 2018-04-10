@@ -149,4 +149,11 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>del "$(TargetDir)\Microsoft.Build.dll"
+del "$(TargetDir)\Microsoft.Build.Framework.dll"
+del "$(TargetDir)\Microsoft.Build.Tasks.Core.dll"
+del "$(TargetDir)\Microsoft.Build.Utilities.Core.dll"
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
